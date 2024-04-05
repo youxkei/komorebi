@@ -240,6 +240,11 @@ impl WindowsApi {
             monitors as *mut Ring<Monitor> as isize,
         )?;
 
+        monitors
+            .elements_mut()
+            .make_contiguous()
+            .sort_by(|a, b| a.index_preference().cmp(&b.index_preference()));
+
         Ok(())
     }
 
