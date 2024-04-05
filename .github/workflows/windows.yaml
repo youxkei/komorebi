@@ -6,15 +6,6 @@ on:
   pull_request:
     branches:
       - "*"
-  push:
-    branches:
-      - master
-      - feature/*
-      - hotfix/*
-    tags:
-      - v*
-  schedule:
-    - cron: "30 0 * * 1" # Every Monday at half past midnight UTC
 
 jobs:
   build:
