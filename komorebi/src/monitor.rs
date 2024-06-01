@@ -42,6 +42,8 @@ pub struct Monitor {
     last_focused_workspace: Option<usize>,
     #[getset(get_mut = "pub")]
     workspace_names: HashMap<usize, String>,
+    #[getset(get_copy = "pub", set = "pub")]
+    index_preference: Option<usize>,
 }
 
 impl_ring_elements!(Monitor, Workspace);
@@ -61,6 +63,7 @@ pub fn new(id: isize, size: Rect, work_area_size: Rect, name: String) -> Monitor
         workspaces,
         last_focused_workspace: None,
         workspace_names: HashMap::default(),
+        index_preference: None,
     }
 }
 

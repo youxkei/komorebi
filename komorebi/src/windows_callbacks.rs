@@ -111,10 +111,9 @@ pub extern "system" fn enum_display_monitor(
         }
 
         let monitor_index_preferences = MONITOR_INDEX_PREFERENCES.lock();
-        let mut index_preference = None;
         for (index, monitor_size) in &*monitor_index_preferences {
             if m.size() == monitor_size {
-                index_preference = Option::from(index);
+                m.set_index_preference(Some(*index));
             }
         }
 
@@ -122,23 +121,12 @@ pub extern "system" fn enum_display_monitor(
         for (index, device) in &*display_index_preferences {
             if let Some(known_device) = m.device_id() {
                 if device == known_device {
-                    index_preference = Option::from(index);
+                    m.set_index_preference(Some(*index));
                 }
             }
         }
 
-        if monitors.elements().is_empty() {
-            monitors.elements_mut().push_back(m);
-        } else if let Some(preference) = index_preference {
-            let current_len = monitors.elements().len();
-            if *preference > current_len {
-                monitors.elements_mut().reserve(1);
-            }
-
-            monitors.elements_mut().insert(*preference, m);
-        } else {
-            monitors.elements_mut().push_back(m);
-        }
+        monitors.elements_mut().push_back(m);
     }
 
     true.into()
