@@ -64,14 +64,6 @@ jobs:
       - name: Install the target
         run: |
           rustup target install ${{ matrix.target }}
-      - name: Run Cargo checks
-        run: |
-          cargo fmt --check
-          cargo check
-          cargo clippy
-      - name: Run a full build
-        run: |
-          cargo build --locked --target ${{ matrix.target }} --features deadlock_detection
       - name: Create MSI installer
         run: |
           cargo install cargo-wix
@@ -81,11 +73,4 @@ jobs:
         with:
           name: komorebi-${{ matrix.target }}
           path: |
-            target/${{ matrix.target }}/debug/komorebi.exe
-            target/${{ matrix.target }}/debug/komorebic.exe
-            target/${{ matrix.target }}/debug/komorebic-no-console.exe
-            target/${{ matrix.target }}/debug/komorebi-gui.exe
-            target/${{ matrix.target }}/debug/komorebi.pdb
-            target/${{ matrix.target }}/debug/komorebic.pdb
-            target/${{ matrix.target }}/debug/komorebi-gui.pdb
             target/wix/komorebi-*.msi

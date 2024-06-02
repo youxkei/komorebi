@@ -249,7 +249,7 @@ impl WindowsApi {
                 }
             }
 
-            let m = monitor::new(
+            let mut m = monitor::new(
                 display.hmonitor,
                 display.size.into(),
                 display.work_area_size.into(),
@@ -258,33 +258,27 @@ impl WindowsApi {
                 device_id,
             );
 
-            let mut index_preference = None;
             let monitor_index_preferences = MONITOR_INDEX_PREFERENCES.lock();
             for (index, monitor_size) in &*monitor_index_preferences {
                 if m.size() == monitor_size {
-                    index_preference = Option::from(index);
+                    m.set_index_preference(Option::from(*index));
                 }
             }
 
             let display_index_preferences = DISPLAY_INDEX_PREFERENCES.lock();
             for (index, id) in &*display_index_preferences {
                 if id.eq(m.device_id()) {
-                    index_preference = Option::from(index);
+                    m.set_index_preference(Option::from(*index));
                 }
             }
 
-            if monitors.elements().is_empty() {
-                monitors.elements_mut().push_back(m);
-            } else if let Some(preference) = index_preference {
-                while *preference > monitors.elements().len() {
-                    monitors.elements_mut().reserve(1);
-                }
-
-                monitors.elements_mut().insert(*preference, m);
-            } else {
-                monitors.elements_mut().push_back(m);
-            }
+            monitors.elements_mut().push_back(m);
         }
+
+        monitors
+            .elements_mut()
+            .make_contiguous()
+            .sort_by(|a, b| a.index_preference().cmp(&b.index_preference()));
 
         Ok(())
     }
